@@ -1,17 +1,22 @@
 import speech_recognition as sr
-from playsound import playsound
+import pygame
 
 def play_sound(sound_file):
-    playsound(sound_file)
+    pygame.mixer.init()
+    pygame.mixer.music.load(sound_file)
+    pygame.mixer.music.play()
+    while pygame.mixer.music.get_busy():
+        continue
+    pygame.mixer.quit()
 
 def recognize_speech():
     recognizer = sr.Recognizer()
     with sr.Microphone() as source:
         print("Konuşmanızı bekliyorum...")
         recognizer.adjust_for_ambient_noise(source, duration=2)
-        print("Mikrofon açıldı.")
+        print("Mikrofon açıldı. Konuşabilirsiniz.")
         try:
-            audio = recognizer.listen(source, timeout=30, phrase_time_limit=5)
+            audio = recognizer.listen(source, timeout=0, phrase_time_limit=5)
         except sr.WaitTimeoutError:
             print("Konuşma algılanmadı.")
             return None

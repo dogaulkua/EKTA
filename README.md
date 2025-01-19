@@ -1,4 +1,3 @@
-markdown
 # Erişilebilir Konuşma - Tercüme Asistanı (EKTA)
 
 Bu proje, konuşulan kelimeleri işitme engelliler için işaret diline tercüme eden bir asistan uygulamasıdır. Uygulama, mikrofon aracılığıyla kullanıcının söylediklerini algılar ve ilgili işaret dili GIF'lerini gösterir. Bu sayede, işitme engellilerle etkili bir iletişim kurmayı hedefler.

@@ -12,25 +12,28 @@ def play_sound(sound_file):
 def recognize_speech():
     recognizer = sr.Recognizer()
     with sr.Microphone() as source:
-        print("Konuşmanızı bekliyorum...")
-        recognizer.adjust_for_ambient_noise(source, duration=2)
+        recognizer.adjust_for_ambient_noise(source, duration=1)  # Ortam gürültüsünü hızlıca ayarlamak için süreyi 1 saniye yapıyoruz
         print("Mikrofon açıldı. Konuşabilirsiniz.")
-        try:
-            audio = recognizer.listen(source, timeout=0, phrase_time_limit=5)
-        except sr.WaitTimeoutError:
-            print("Konuşma algılanmadı.")
-            return None
-        play_sound(r'C:\Users\Lenovo\Desktop\Turkish_Sign_Language_Translator\src\retro-audio-logo-94648.mp3')
-        try:
-            text = recognizer.recognize_google(audio, language="tr-TR")
-            print("Algılanan Metin: ", text)
-            return text
-        except sr.UnknownValueError:
-            print("Sesi Anlayamadım.")
-            return None
-        except sr.RequestError:
-            print("Servis Kullanılamıyor.")
-            return None
+
+        while True:
+            try:
+                print("Ses algılanıyor...")
+                audio = recognizer.listen(source, timeout=5, phrase_time_limit=10)  # Ses duyulunca algılamaya başlar ve 10 saniye süreyle dinler
+                print("Ses kaydedildi, işleniyor...")
+                play_sound(r'C:\Users\Lenovo\Desktop\Turkish_Sign_Language_Translator\src\retro-audio-logo-94648.mp3')
+
+                text = recognizer.recognize_google(audio, language="tr-TR")
+                print("Algılanan Metin: ", text)
+                return text
+            except sr.UnknownValueError:
+                print("Sesi Anlayamadım. Tekrar deneyin.")
+                continue
+            except sr.RequestError:
+                print("Servis Kullanılamıyor.")
+                return None
+            except Exception as e:
+                print(f"Bir hata oluştu: {e}")
+                return None
 
 if __name__ == "__main__":
     recognize_speech()

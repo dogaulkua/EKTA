@@ -11,7 +11,7 @@ from time import sleep
 # `src` klasörünü arama yoluna ekleyin
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
 
-from speech_to_text import recognize_speech
+from speech_to_text import recognize_speech, process_text
 
 class GifApp:
     def __init__(self, root):
@@ -24,7 +24,7 @@ class GifApp:
         self.title_frame.pack(anchor="nw", padx=10, pady=10)
 
         self.logo_image = PhotoImage(file=r"C:\Users\Lenovo\Desktop\Turkish_Sign_Language_Translator\src\img\logo.png")
-        self.logo_label = Label(self.title_frame, image=self.logo_image, bg="#f4fefe")  # Logonun boyutunu küçültüyoruz ve açık arka plana uygun hale getiriyoruz
+        self.logo_label = Label(self.title_frame, image=self.logo_image, bg="#f4fefe")
         self.logo_label.pack(side="left", padx=10)
 
         self.title_label = Label(self.title_frame, text="Erişilebilir Konuşma - Tercüme Asistanı (EKTA)", font=("Arial", 20, "bold"), fg="#2abef4", bg="#f4fefe")
@@ -150,6 +150,7 @@ class GifApp:
         if text:
             self.detected_text_label.config(text=f"Algılanan metin: {text}")
             self.say_text(f"Algılanan metin: {text}")
+            process_text(text)  # Metin işleme ve analiz işlemleri
             gif_paths = self.translate_to_gif(text, gif_dir, new_gif_dir)
             self.display_gifs(gif_paths)
         else:

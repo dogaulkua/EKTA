@@ -3,4 +3,10 @@ openai==0.11.0
 speechrecognition==3.8.1
 playsound==1.2.2
 gtts==2.2.3
+pandas
+numpy
+matplotlib
+seaborn
+scikit-learn
+
 

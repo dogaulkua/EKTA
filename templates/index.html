@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İşaret Dili Çeviri ve Duygu Analizi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f8f9fa;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+        .button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .gif-frame {
+            margin-top: 25px;
+        }
+        .logo {
+            width: 100px;
+            margin-bottom: 20px;
+        }
+        #status_label {
+            margin: 10px 0;
+            font-size: 14px;
+            color: #000000;
+        }
+        #emotion_label {
+            margin: 10px 0;
+            font-size: 16px;
+            font-weight: bold;
+            color: #ff5733;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="/static/logo.png" alt="Logo" class="logo">
+        <h2>İşaret Dili Çeviri ve Duygu Analizi</h2>
+        <button onclick="startRecognition()" class="button">Mikrofonu Aç</button>
+        <div id="status_label" class="status-label"></div>
+        <div id="emotion_label" class="emotion-label"></div>
+        <div id="gif_frame" class="gif-frame"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
+    <script>
+        const socket = io.connect('http://127.0.0.1:5000');
+
+        socket.on('update_gifs', function(data) {
+            const gifFrame = document.getElementById('gif_frame');
+            gifFrame.innerHTML = '';  // Eski GIF'leri temizle
+            data.gifs.forEach(gif => {
+                const img = document.createElement('img');
+                img.src = gif;
+                img.style.width = '150px';
+                img.style.height = '150px';
+                img.style.margin = '10px';
+                gifFrame.appendChild(img);
+            });
+
+            // Evet/Hayır düğmelerini ekle
+            setTimeout(() => {
+                const buttonContainer = document.createElement('div');
+                buttonContainer.style.marginTop = '20px';
+
+                const statusLabel = document.getElementById('status_label');
+                statusLabel.textContent = "Konuşmaya devam etmek ister misiniz?";
+
+                const yesButton = document.createElement('button');
+                yesButton.className = 'button';
+                yesButton.textContent = 'Evet';
+                yesButton.onclick = startRecognition;
+
+                const noButton = document.createElement('button');
+                noButton.className = 'button';
+                noButton.textContent = 'Hayır';
+                noButton.onclick = function() {
+                    statusLabel.textContent = "Görüşme sonlandırıldı. Teşekkürler.";
+                };
+
+                buttonContainer.appendChild(yesButton);
+                buttonContainer.appendChild(noButton);
+                gifFrame.appendChild(buttonContainer);
+            }, 3000);
+        });
+
+        socket.on('text_recognized', function(data) {
+            document.getElementById('status_label').textContent = "Algılanan Metin: " + data.text;
+            document.getElementById('emotion_label').textContent = "Duygu Analizi: " + JSON.stringify(data.sentiment);
+        });
+
+        socket.on('ask_continue', function(data) {
+            const statusLabel = document.getElementById('status_label');
+            statusLabel.textContent = data.status;
+
+            const gifFrame = document.getElementById('gif_frame');
+            gifFrame.innerHTML = '';  // Eski GIF'leri temizle
+
+            const buttonContainer = document.createElement('div');
+            buttonContainer.style.marginTop = '20px';
+
+            const yesButton = document.createElement('button');
+            yesButton.className = 'button';
+            yesButton.textContent = 'Evet';
+            yesButton.onclick = startRecognition;
+
+            const noButton = document.createElement('button');
+            noButton.className = 'button';
+            noButton.textContent = 'Hayır';
+            noButton.onclick = function() {
+                statusLabel.textContent = "Görüşme sonlandırıldı. Teşekkürler.";
+            };
+
+            buttonContainer.appendChild(yesButton);
+            buttonContainer.appendChild(noButton);
+            gifFrame.appendChild(buttonContainer);
+        });
+
+        function startRecognition() {
+            document.getElementById('status_label').textContent = "Mikrofon açılacaktır. Lütfen birkaç saniye bekleyin 😊";
+            fetch('/start_recognition', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status) {
+                    document.getElementById('status_label').textContent = "Mikrofon açıldı. Konuşabilirsiniz.";
+                } else if (data.error) {
+                    document.getElementById('status_label').textContent = data.error;
+                }
+            })
+            .catch(error => {
+                document.getElementById('status_label').textContent = "Bir hata oluştu: " + error;
+            });
+        }
+    </script>
+</body>
+</html>

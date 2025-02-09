@@ -80,36 +80,11 @@
                 img.style.margin = '10px';
                 gifFrame.appendChild(img);
             });
-
-            // Evet/Hayır düğmelerini ekle
-            setTimeout(() => {
-                const buttonContainer = document.createElement('div');
-                buttonContainer.style.marginTop = '20px';
-
-                const statusLabel = document.getElementById('status_label');
-                statusLabel.textContent = "Konuşmaya devam etmek ister misiniz?";
-
-                const yesButton = document.createElement('button');
-                yesButton.className = 'button';
-                yesButton.textContent = 'Evet';
-                yesButton.onclick = startRecognition;
-
-                const noButton = document.createElement('button');
-                noButton.className = 'button';
-                noButton.textContent = 'Hayır';
-                noButton.onclick = function() {
-                    statusLabel.textContent = "Görüşme sonlandırıldı. Teşekkürler.";
-                };
-
-                buttonContainer.appendChild(yesButton);
-                buttonContainer.appendChild(noButton);
-                gifFrame.appendChild(buttonContainer);
-            }, 3000);
         });
 
         socket.on('text_recognized', function(data) {
             document.getElementById('status_label').textContent = "Algılanan Metin: " + data.text;
-            document.getElementById('emotion_label').textContent = "Duygu Analizi: " + JSON.stringify(data.sentiment);
+            document.getElementById('emotion_label').textContent = "Duygu Analizi: " + data.sentiment.sentiment;
         });
 
         socket.on('ask_continue', function(data) {

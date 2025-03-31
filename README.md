@@ -62,3 +62,5 @@ Teşekkürler ve projeyi kullanmaktan keyif almanız dileğiyle!
 
 
 Bu README dosyası, projenizin amacını, özelliklerini, kurulum ve kullanım talimatlarını, katkıda bulunma yöntemlerini ve iletişim bilgilerini içerir. Yardımcı olabileceğim başka bir konu varsa, lütfen bana bildirin! 😊
+
+Gifler: işaretçe.com'dan alınmaktadır
